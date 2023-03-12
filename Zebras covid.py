@@ -32,7 +32,7 @@ plot_corr(covid.corr(method = 'kendall',numeric_only=True), xnames = covid.corr(
 plt.show()
 
 #Unique rows
-covid.sort_values('Country')
+covid.sort_values('Total Cases', ascending=False).head(10)
 covid['Country'].sort_values().unique()
 
 
@@ -62,22 +62,30 @@ df_world_covid['Country'].nunique()
 
 
 #Total cases map
-ax = df_world["geometry"].boundary.plot(figsize=(20,16))
-df_world_covid.plot( column="Total Cases", ax=ax, cmap='Reds', legend=True, legend_kwds={"label": "Number of Cases", "orientation":"horizontal"})
-ax.set_title("Countries Vs numbetr of covid cases relative to thr rest of the countries")
-plt.show()
+ax = df_world["geometry"].boundary.plot(figsize=(16,16))
+df_world_covid.plot( column=np.log1p(df_world_covid["Total Cases"]), ax=ax, cmap='BuPu', legend=True, legend_kwds={"label": "Number of Cases", "orientation":"horizontal"})
+ax.set_title("Number of Covid Cases")
+#plt.show()
 
 #Total Deaths map
-ax1 = df_world["geometry"].boundary.plot(figsize=(20,16))
-df_world_covid.plot( column="Total Deaths", ax=ax1, cmap='Reds', legend=True, legend_kwds={"label": "Number of Deaths", "orientation":"horizontal"})
-ax1.set_title("Countries Vs numbetr of covid deaths relative to thr rest of the countries")
-plt.show()
+ax1 = df_world["geometry"].boundary.plot(figsize=(16,16))
+df_world_covid.plot( column=np.log1p(df_world_covid["Total Deaths"]), ax=ax1, cmap='BuPu', legend=True, legend_kwds={"label": "Number of Deaths", "orientation":"horizontal"})
+ax1.set_title("Number of Covid Deaths")
+#plt.show()
 
 #Total Tests map
-ax2 = df_world["geometry"].boundary.plot(figsize=(20,16))
-df_world_covid.plot( column="Total Test", ax=ax2, cmap='Reds',  legend=True, legend_kwds={"label": "Number of Tests", "orientation":"horizontal"})
-ax2.set_title("Countries Vs numbetr of covid tests relative to thr rest of the countries")
+ax2 = df_world["geometry"].boundary.plot(figsize=(16,16))
+df_world_covid.plot( column=np.log1p(df_world_covid["Total Test"]), ax=ax2, cmap='BuPu',  legend=True, legend_kwds={"label": "Number of Tests", "orientation":"horizontal"})
+ax2.set_title("Number of Covid Tests")
+#plt.show()
+
+#Population sizes
+ax6 = df_world["geometry"].boundary.plot(figsize=(16,16))
+df_world_covid.plot( column= np.log1p(df_world_covid["Population"]), ax=ax6, cmap='BuPu',  legend=True, legend_kwds={"label": "Population size", "orientation":"horizontal"})
+ax6.set_title("Country Population Sizes")
 plt.show()
+
+
 
 def create_features(df):
     df['case_per_capita'] = np.log1p(df['Total Cases']/df['Population'])
@@ -86,26 +94,27 @@ def create_features(df):
     df['active_cases_per_capita'] = np.log1p(df['Active Cases']/df['Population'])
     df['recovery_rate'] = np.log1p(df['Total Recovered']/df['Total Cases'])
     df['tests_per_capita'] = np.log1p(df['Total Test']/df['Population'])
-
-
-    
     return df
 df = create_features(coviddf)
 
 df_worldcovid = df_world.merge(df, how="left", left_on=['name'], right_on=['Country'])
 
 #Total cases map
-ax3 = df_world["geometry"].boundary.plot(figsize=(20,16))
-df_worldcovid.plot( column="case_per_capita", ax=ax3, cmap='Reds', legend=True, legend_kwds={"label": "Number of Cases per population size", "orientation":"horizontal"})
-ax3.set_title("Countries Vs numbetr of covid cases relative to thr rest of the countries")
+ax3 = df_world["geometry"].boundary.plot(figsize=(16,16))
+df_worldcovid.plot( column="case_per_capita", ax=ax3, cmap='BuPu', legend=True, legend_kwds={"label": "Number of Cases per Capita", "orientation":"horizontal"})
+ax3.set_title("Cases of Covid Relative to Country Populations")
+#plt.show()
+
+ax4 = df_world["geometry"].boundary.plot(figsize=(16,16))
+df_worldcovid.plot( column="case_fatality_rate", ax=ax4, cmap='BuPu', legend=True, legend_kwds={"label": "Number of Deaths per Cases", "orientation":"horizontal"})
+ax4.set_title("Number of Deaths Realative to the Number of Cases in the Country")
+#plt.show()
+
+ax5 = df_world["geometry"].boundary.plot(figsize=(16,16))
+df_worldcovid.plot( column="tests_per_capita", ax=ax5, cmap='BuPu', legend=True, legend_kwds={"label": "Number of Tests per Capita", "orientation":"horizontal"})
+ax5.set_title("Number Tests Relative to Country Populations")
 plt.show()
 
-ax4 = df_world["geometry"].boundary.plot(figsize=(20,16))
-df_worldcovid.plot( column="case_fatality_rate", ax=ax4, cmap='Reds', legend=True, legend_kwds={"label": "Deaths per cases", "orientation":"horizontal"})
-ax4.set_title("Countries Vs numbetr of covid cases relative to thr rest of the countries")
-plt.show()
 
-ax5 = df_world["geometry"].boundary.plot(figsize=(20,16))
-df_worldcovid.plot( column="tests_per_capita", ax=ax5, cmap='Reds', legend=True, legend_kwds={"label": "tests per capita", "orientation":"horizontal"})
-ax5.set_title("Countries Vs numbetr of covid cases relative to thr rest of the countries")
-plt.show()
+
+df.head()
