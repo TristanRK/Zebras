@@ -4,6 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings('ignore') 
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 covid = pd.read_csv("C:/Users/trist/OneDrive/Explore/Portfolio work/Zebras work/covid_worldwide.csv")
 covid.head()
@@ -99,22 +100,33 @@ df = create_features(coviddf)
 
 df_worldcovid = df_world.merge(df, how="left", left_on=['name'], right_on=['Country'])
 
-#Total cases map
-ax3 = df_world["geometry"].boundary.plot(figsize=(16,16))
-df_worldcovid.plot( column="case_per_capita", ax=ax3, cmap='BuPu', legend=True, legend_kwds={"label": "Number of Cases per Capita", "orientation":"horizontal"})
-ax3.set_title("Cases of Covid Relative to Country Populations")
-#plt.show()
 
-ax4 = df_world["geometry"].boundary.plot(figsize=(16,16))
-df_worldcovid.plot( column="case_fatality_rate", ax=ax4, cmap='BuPu', legend=True, legend_kwds={"label": "Number of Deaths per Cases", "orientation":"horizontal"})
-ax4.set_title("Number of Deaths Realative to the Number of Cases in the Country")
-#plt.show()
 
-ax5 = df_world["geometry"].boundary.plot(figsize=(16,16))
-df_worldcovid.plot( column="tests_per_capita", ax=ax5, cmap='BuPu', legend=True, legend_kwds={"label": "Number of Tests per Capita", "orientation":"horizontal"})
-ax5.set_title("Number Tests Relative to Country Populations")
+
+countries = gpd.countries.plot()
+
+fig, ax7 = plt.subplots(1, 1, figsize=(40, 26))
+divider = make_axes_locatable(ax7)
+cax = divider.append_axes("right", size="2%", pad="0.5%")
+df_worldcovid.plot(column="case_per_capita", ax=ax7, cax=cax, cmap='tab20c_r', legend=True, legend_kwds={"label": "Cases per Capita"})
+ax7.set_title("Cases of Covid Relative to Country Populations", fontsize=25)
 plt.show()
 
+fig, ax8 = plt.subplots(1, 1, figsize=(40, 26))
+divider = make_axes_locatable(ax8)
+cax = divider.append_axes("right", size="2%", pad="0.5%")
+df_worldcovid.plot(column="case_fatality_rate", ax=ax8, cax=cax, cmap='BuPu', legend=True, legend_kwds={"label": "Deaths per Cases"})
+ax8.set_title("Number of Deaths Realative to the Number of Cases in the Country", fontsize=25)
+plt.show()
+
+fig, ax9 = plt.subplots(1, 1, figsize=(40, 26))
+divider = make_axes_locatable(ax9)
+cax = divider.append_axes("right", size="2%", pad="0.5%")
+df_worldcovid.plot(column= "tests_per_capita", ax=ax9, cax=cax, cmap='BuPu', legend=True, legend_kwds={"label": "Tests per Capita"})
+ax9.set_title("Number Tests Relative to Country Populations", fontsize=25)
+plt.show()
+
+#df_worldcovid.explore(column='case_per_capita',cmap='Set2')
 
 
 df.head()
